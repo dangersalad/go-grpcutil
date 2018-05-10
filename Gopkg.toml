@@ -1,0 +1,15 @@
+[[constraint]]
+  name = "github.com/dangersalad/go-environment"
+  version = "0.2.2"
+
+[[constraint]]
+  name = "github.com/pkg/errors"
+  version = "0.8.0"
+
+[[constraint]]
+  name = "google.golang.org/grpc"
+  version = "1.12.0"
+
+[prune]
+  go-tests = true
+  unused-packages = true
