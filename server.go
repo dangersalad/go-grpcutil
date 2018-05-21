@@ -61,7 +61,7 @@ func IsSecure() bool {
 	if conf[EnvKeySecureServer] != "" {
 		useSecureServer = true
 	}
-	return true
+	return false
 }
 
 // BaseServerOpts returns the base set of grpc server options as an array
