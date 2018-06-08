@@ -1,3 +1,4 @@
+// Package grpcutil provides helper functions for boilerplate grpc setup
 package grpcutil // import "github.com/dangersalad/go-grpcutil"
 
 import (
@@ -6,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"net"
+	"strings"
 )
 
 // EnvKeySecureServer is the environment key to trigger making a
@@ -76,6 +78,9 @@ func MakeServerOpts(opts ...grpc.ServerOption) []grpc.ServerOption {
 
 // CreateServer will return a new gRPC server, either secured or not based on the presence of the --secure flag
 func CreateServer(port string, opt ...grpc.ServerOption) (*ServerSet, error) {
+	if strings.Index(port, ":") < 0 {
+		port = ":" + port
+	}
 	opt = MakeServerOpts(opt...)
 	if IsSecure() {
 		debug("creating secured server")
