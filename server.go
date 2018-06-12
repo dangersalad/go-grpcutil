@@ -62,6 +62,7 @@ func IsSecure() bool {
 	})
 	if conf[EnvKeySecureServer] != "" {
 		useSecureServer = true
+		return true
 	}
 	return false
 }
