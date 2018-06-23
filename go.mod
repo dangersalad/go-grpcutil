@@ -7,5 +7,5 @@ require (
 	golang.org/x/net v0.0.0-20180509002218-f73e4c9ed3b7
 	golang.org/x/text v0.3.0
 	google.golang.org/genproto v0.0.0-20180427144745-86e600f69ee4
-	google.golang.org/grpc v1.12.0
+	google.golang.org/grpc v1.13.0
 )
