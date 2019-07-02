@@ -49,7 +49,7 @@ func (h *BasicStatsHandler) HandleRPC(ctx context.Context, i stats.RPCStats) {
 		logf("method %s is not a string", ctxMethod)
 	}
 
-	if h.logBypass.MatchString(method) {
+	if h.logBypass != nil && h.logBypass.MatchString(method) {
 		return
 	}
 
