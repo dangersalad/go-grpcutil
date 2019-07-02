@@ -74,7 +74,10 @@ func BaseServerOpts() []grpc.ServerOption {
 
 // MakeServerOpts returns the base set of grpc server options with added options
 func MakeServerOpts(opts ...grpc.ServerOption) []grpc.ServerOption {
-	defaultOpts := BaseServerOpts()
+	var defaultOpts []grpc.ServerOption
+	if len(opts) == 0 {
+		defaultOpts = BaseServerOpts()
+	}
 	return append(defaultOpts, opts...)
 }
 
