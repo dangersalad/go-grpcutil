@@ -74,7 +74,8 @@ func BaseServerOpts() []grpc.ServerOption {
 
 // MakeServerOpts returns the base set of grpc server options with added options
 func MakeServerOpts(opts ...grpc.ServerOption) []grpc.ServerOption {
-	return append(opts, BaseServerOpts()...)
+	defaultOpts := BaseServerOpts()
+	return append(defaultOpts, opts...)
 }
 
 // CreateServer will return a new gRPC server, either secured or not based on the presence of the --secure flag
