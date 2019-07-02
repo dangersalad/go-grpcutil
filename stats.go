@@ -5,12 +5,21 @@ import (
 	"fmt"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
+	"regexp"
 	"time"
 )
 
 // BasicStatsHandler is a stats handler that logs the method and the
 // time it took to run
-type BasicStatsHandler struct{}
+type BasicStatsHandler struct {
+	logBypass *regexp.Regexp
+}
+
+func NewStatsHandler(bypass *regexp.Regexp) *BasicStatsHandler {
+	return &BasicStatsHandler{
+		logBypass: bypass,
+	}
+}
 
 type contextKey string
 
@@ -33,6 +42,17 @@ func (h *BasicStatsHandler) TagRPC(ctx context.Context, tagInfo *stats.RPCTagInf
 // HandleRPC runs after the request has finished
 func (h *BasicStatsHandler) HandleRPC(ctx context.Context, i stats.RPCStats) {
 
+	ctxMethod := ctx.Value(contextKeyMethod)
+
+	method, ok := ctxMethod.(string)
+	if !ok {
+		logf("method %s is not a string", ctxMethod)
+	}
+
+	if h.logBypass.MatchString(method) {
+		return
+	}
+
 	switch info := i.(type) {
 	case *stats.End:
 		if start, ok := ctx.Value(contextKeyStart).(time.Time); ok {
@@ -44,8 +64,6 @@ func (h *BasicStatsHandler) HandleRPC(ctx context.Context, i stats.RPCStats) {
 			} else if diff > time.Millisecond {
 				diffStr = fmt.Sprintf("%0.3fms", float64(diff.Nanoseconds())/10000000.0)
 			}
-
-			method := ctx.Value(contextKeyMethod)
 
 			if info.Error != nil {
 				if gErr, ok := status.FromError(info.Error); ok {
