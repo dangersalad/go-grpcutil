@@ -49,8 +49,9 @@ func (h *BasicStatsHandler) HandleRPC(ctx context.Context, i stats.RPCStats) {
 		logf("method %s is not a string", ctxMethod)
 	}
 
+	var bypassed bool
 	if h.logBypass != nil && h.logBypass.MatchString(method) {
-		return
+		bypassed = true
 	}
 
 	switch info := i.(type) {
@@ -71,7 +72,7 @@ func (h *BasicStatsHandler) HandleRPC(ctx context.Context, i stats.RPCStats) {
 				} else {
 					logf("%s - %s (%s)", method, info.Error.Error(), diffStr)
 				}
-			} else {
+			} else if !bypassed {
 				logf("%s (%s)", method, diffStr)
 			}
 		}
