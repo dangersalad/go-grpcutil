@@ -3,11 +3,12 @@ package grpcutil // import "github.com/dangersalad/go-grpcutil"
 
 import (
 	"flag"
-	env "github.com/dangersalad/go-environment"
-	"github.com/pkg/errors"
-	"google.golang.org/grpc"
+	"fmt"
 	"net"
 	"strings"
+
+	env "github.com/dangersalad/go-environment"
+	"google.golang.org/grpc"
 )
 
 // EnvKeySecureServer is the environment key to trigger making a
@@ -38,7 +39,7 @@ func (s *ServerSet) IsSecure() bool {
 
 // Serve starts the server
 func (s *ServerSet) Serve() error {
-	return errors.Wrap(s.server.Serve(s.listener), "serving grpc")
+	return fmt.Errorf("serving grpc: %w", s.server.Serve(s.listener))
 }
 
 // setup flags
@@ -99,7 +100,7 @@ func CreateServer(port string, opt ...grpc.ServerOption) (*ServerSet, error) {
 func CreateSecureServer(port string, opt ...grpc.ServerOption) (*ServerSet, error) {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		return nil, errors.Wrap(err, "setting up port")
+		return nil, fmt.Errorf("setting up port: %w", err)
 	}
 	creds, err := GetServerCredentials()
 	if err != nil {
@@ -118,7 +119,7 @@ func CreateSecureServer(port string, opt ...grpc.ServerOption) (*ServerSet, erro
 func CreateInternalServer(port string, opt ...grpc.ServerOption) (*ServerSet, error) {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		return nil, errors.Wrap(err, "setting up port")
+		return nil, fmt.Errorf("setting up port: %w", err)
 	}
 	return &ServerSet{
 		server:   grpc.NewServer(opt...),

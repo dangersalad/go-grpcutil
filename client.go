@@ -1,8 +1,9 @@
 package grpcutil
 
 import (
+	"fmt"
+
 	"github.com/dangersalad/go-environment"
-	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -13,7 +14,7 @@ func GetInternalConnection(host string, opt ...grpc.DialOption) (*grpc.ClientCon
 	opts := append(opt, grpc.WithInsecure())
 	conn, err := grpc.Dial(host, opts...)
 	if err != nil {
-		return nil, errors.Wrap(err, "setting up grpc client")
+		return nil, fmt.Errorf("setting up grpc client: %w", err)
 	}
 	return conn, nil
 }
@@ -25,20 +26,20 @@ func GetSecureConnection(host, serverOverride string, opt ...grpc.DialOption) (*
 		EnvKeyCrtFile: "/ssl/tls.crt",
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "reading environment")
+		return nil, fmt.Errorf("reading environment: %w", err)
 	}
 	crt := conf[EnvKeyCrtFile]
 
 	creds, err := credentials.NewClientTLSFromFile(crt, serverOverride)
 	if err != nil {
-		return nil, errors.Wrap(err, "creating credentials")
+		return nil, fmt.Errorf("creating credentials: %w", err)
 	}
 
 	opts := append(opt, grpc.WithTransportCredentials(creds))
 	// Create a connection with the TLS credentials
 	conn, err := grpc.Dial(host, opts...)
 	if err != nil {
-		return nil, errors.Wrap(err, "dialing service")
+		return nil, fmt.Errorf("dialing service: %w", err)
 	}
 
 	return conn, nil

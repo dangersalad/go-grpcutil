@@ -1,8 +1,9 @@
 package grpcutil
 
 import (
+	"fmt"
+
 	env "github.com/dangersalad/go-environment"
-	"github.com/pkg/errors"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -24,7 +25,7 @@ func getCertFiles() (crt, key string, err error) {
 		EnvKeyKeyFile: key,
 	})
 	if err != nil {
-		return "", "", errors.Wrap(err, "reading environment")
+		return "", "", fmt.Errorf("reading environment: %w", err)
 	}
 	crt = conf[EnvKeyCrtFile]
 	key = conf[EnvKeyKeyFile]
@@ -35,7 +36,7 @@ func getCertFiles() (crt, key string, err error) {
 func GetClientCredentials(servername string) (credentials.TransportCredentials, error) {
 	creds, err := credentials.NewClientTLSFromFile(rootCert, servername)
 	if err != nil {
-		return nil, errors.Wrap(err, "creating grpc client credentials")
+		return nil, fmt.Errorf("creating grpc client credentials: %w", err)
 	}
 	return creds, nil
 }
@@ -44,11 +45,11 @@ func GetClientCredentials(servername string) (credentials.TransportCredentials, 
 func GetServerCredentials() (credentials.TransportCredentials, error) {
 	crt, key, err := getCertFiles()
 	if err != nil {
-		return nil, errors.Wrap(err, "getting tls filenames")
+		return nil, fmt.Errorf("getting tls filenames: %w", err)
 	}
 	creds, err := credentials.NewServerTLSFromFile(crt, key)
 	if err != nil {
-		return nil, errors.Wrap(err, "creating grpc server credentials")
+		return nil, fmt.Errorf("creating grpc server credentials: %w", err)
 	}
 	return creds, nil
 }
