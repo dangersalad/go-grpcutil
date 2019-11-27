@@ -5,6 +5,7 @@ import (
 
 	"github.com/dangersalad/go-environment"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/balancer/roundrobin"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -17,6 +18,23 @@ func GetInternalConnection(host string, opt ...grpc.DialOption) (*grpc.ClientCon
 		return nil, fmt.Errorf("setting up grpc client: %w", err)
 	}
 	return conn, nil
+}
+
+// GetInternalBalancedConnection will return a new gRPC connection with no
+// credentials and a roundrobin load balancer set up
+func GetInternalBalancedConnection(host string, opt ...grpc.DialOption) (*grpc.ClientConn, error) {
+
+	if host[0:7] != "dns:///" {
+		host = fmt.Sprintf("dns:///%s", host)
+	}
+
+	opts := append(opt, grpc.WithInsecure(), grpc.WithBalancerName(roundrobin.Name))
+	conn, err := grpc.Dial(host, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("setting up grpc client: %w", err)
+	}
+	return conn, nil
+
 }
 
 // GetSecureConnection will return a new gRPC connection with the
