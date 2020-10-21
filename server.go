@@ -2,7 +2,6 @@
 package grpcutil // import "github.com/dangersalad/go-grpcutil"
 
 import (
-	"flag"
 	"fmt"
 	"net"
 	"strings"
@@ -42,30 +41,12 @@ func (s *ServerSet) Serve() error {
 	return fmt.Errorf("serving grpc: %w", s.server.Serve(s.listener))
 }
 
-// setup flags
-var useSecureServer bool
-
-func init() {
-	flag.BoolVar(&useSecureServer, "secure", false, "Start secure server instead of internal")
-}
-
 // IsSecure returns the value of the --secure flag or the env var GRPC_SECURE
 func IsSecure() bool {
-	if !flag.Parsed() {
-		debug("parsing secure flag for grpc server setup")
-		flag.Parse()
-	}
-	if useSecureServer {
-		return true
-	}
 	conf := env.ReadOptionsAllowMissing(env.Options{
 		EnvKeySecureServer: "",
 	})
-	if conf[EnvKeySecureServer] != "" {
-		useSecureServer = true
-		return true
-	}
-	return false
+	return conf[EnvKeySecureServer] != ""
 }
 
 // BaseServerOpts returns the base set of grpc server options as an array
